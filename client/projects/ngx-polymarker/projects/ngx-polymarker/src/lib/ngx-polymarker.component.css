@@ -1,0 +1,67 @@
+.header {
+    display: flex;
+    flex-direction: row;
+}
+
+.svg-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.svg {
+    width: 95vw;
+    height: 85vh;
+    margin: 20px;
+    border: black 1px solid;
+}
+
+.temp-polygon {
+    fill: rgba(66, 255, 230, .02);
+    stroke: rgba(66, 255, 230, .9);
+}
+
+.polygon {
+    stroke: rgba(66, 255, 230, .05);
+    fill: rgba(66, 255, 230, .00);
+    transition: .2s ease;
+}
+
+.polygon:hover {
+    stroke: rgba(66, 255, 230, .9);
+    fill: rgba(66, 255, 230, .01);
+
+}
+
+.polygonCreate {
+    fill: rgba(66, 255, 230, .05);
+    stroke: rgba(66, 255, 230, .9);
+}
+.circle {
+    fill: rgba(66, 255, 230, 1);
+}
+.circleLine {
+    fill: red;
+}
+.circleCorner {
+    transition: .1s ease;
+    fill: none;
+    stroke: red;
+    stroke-width: 2px;
+    transform: rotate(360);
+}
+
+.contextMenu {
+    width: 100px;
+    height: 300px;
+    background-color: green;
+    border-radius: 8%;
+    position: absolute;
+    top: 50px;
+    left: 50px;
+    z-index: 1;
+}
+
+

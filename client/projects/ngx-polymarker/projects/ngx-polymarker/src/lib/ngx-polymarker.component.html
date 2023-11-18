@@ -1,0 +1,27 @@
+<div class="polymarker">
+    <svg class="svg" (click)="createPoint()" (mousemove)="followMovement($event)" (dblclick)="finalisePolygon()"
+        (contextmenu)="cancelPoint($event)">
+
+        <polygon class="temp-polygon" [attr.points]="tempPoints" />
+
+        <g *ngFor="let polygon of polygons">
+            <polygon [ngClass]="{'polygonCreate': creatingPolygon, 'polygon': !creatingPolygon}"
+                [attr.points]="getNodeString(polygon.nodes)" (mouseenter)="polygonHovered(polygon.id)"
+                (mouseout)="polygonLeft(polygon.id)" (click)="selectPolygon(polygon)">
+            </polygon>
+            <text [attr.x]="polygon.position.x" [attr.y]="polygon.position.y" class="mapText">{{polygon.name}}</text>
+            <g *ngIf="creatingPolygon">
+                <circle *ngFor="let node of polygon.nodes" [attr.cx]="node.x" [attr.cy]="node.y" r="2"
+                    class="circle" />
+            </g>
+
+
+        </g>
+
+        <circle class="circle" *ngFor="let point of polygonNodes" [attr.cx]="point.x" [attr.cy]="point.y" r="2" />
+        <circle *ngIf="creatingPolygon"
+            [ngClass]="{'circle': cursorHoverPosition == 1, 'circleLine': cursorHoverPosition == 2, 'circleCorner': cursorHoverPosition == 3}"
+            [attr.cx]="mouseposition.x" [attr.cy]="mouseposition.y" [attr.r]="circleRadius" />
+    </svg>
+    <div class="contextMenu" *ngIf="showMenu"></div>
+</div>

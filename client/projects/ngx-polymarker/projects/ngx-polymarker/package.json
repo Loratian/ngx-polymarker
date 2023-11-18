@@ -1,0 +1,19 @@
+{
+  "name": "ngx-polymarker",
+  "version": "0.0.4",
+  "description": "Angular package for marking anything using polygons",
+  "scripts": {
+    "test": "ng test",
+    "build": "ng build ngx-polymarker --prod"
+  }, 
+  "author": "Loratian",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Loratian/ngx-polymarker.git"
+  },
+  "peerDependencies": {
+    "@angular/common": "^16.2.10",
+    "@angular/core": "^16.2.10"
+  },
+  "sideEffects": false
+}
