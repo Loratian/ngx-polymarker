@@ -1,8 +1,7 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { AppComponent } from './app.component';
-import { NgxPolymarkerComponent } from 'projects/ngx-polymarker/projects/ngx-polymarker/src/public-api';
-
+import { NgxPolymarkerComponent, NgxPolymarkerService } from 'projects/ngx-polymarker/dist/ngx-polymarker';
 @NgModule({
   declarations: [
     AppComponent
@@ -11,7 +10,7 @@ import { NgxPolymarkerComponent } from 'projects/ngx-polymarker/projects/ngx-pol
     BrowserModule,
     NgxPolymarkerComponent
   ],
-  providers: [],
+  providers: [NgxPolymarkerService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

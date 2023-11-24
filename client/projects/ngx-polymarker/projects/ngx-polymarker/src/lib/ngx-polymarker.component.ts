@@ -1,13 +1,14 @@
-import { Component } from '@angular/core';
-import { Node  } from './Interfaces/node.interface';
+import { Component, Input, OnInit } from '@angular/core';
+import { Node } from './Interfaces/node.interface';
 import { Polygon } from './Interfaces/polygon.interface';
 import { NgClass, NgFor, NgIf } from '@angular/common';
+import { NgxPolymarkerService } from './ngx-polymarker.service';
 
 @Component({
   selector: 'ngx-polymarker',
   templateUrl: 'ngx-polymarker.component.html',
-  styleUrls: [ 'ngx-polymarker.component.css' ],
-  standalone: true, 
+  styleUrls: ['ngx-polymarker.component.css'],
+  standalone: true,
   imports: [
     NgClass,
     NgFor,
@@ -16,9 +17,14 @@ import { NgClass, NgFor, NgIf } from '@angular/common';
 })
 
 export class NgxPolymarkerComponent {
+  @Input() polygonsIMP?: any[];
+
+  activePolygon?: Polygon;
+  activeImputField?: Element;
+  fontFamily: string = '';
+
   polygonNodes: Node[] = [];
   tempPoints: string = '';
-  polygons: Polygon[] = [];
   creatingPolygon: boolean = false;
   mouseposition: { x: number, y: number } = { x: 0, y: 0 }
   tempPointActive: boolean = false;
@@ -30,15 +36,42 @@ export class NgxPolymarkerComponent {
 
   showMenu: boolean = false
 
-  createPoint() {
+  constructor(private configService: NgxPolymarkerService) {
+    this.fontFamily = this.configService.getFontFamily();
+    document.documentElement.style.setProperty('--selected-FontFamily', `'${this.fontFamily}', sans-serif`)
+  }
+
+  click() {
     if (this.creatingPolygon) {
-
-      this.polygonNodes.push(
-        { x: this.mouseposition.x, y: this.mouseposition.y },
-      )
-      this.updatePolygon(this.mouseposition.x, this.mouseposition.y)
+      this.createPoint()
     }
+  }
 
+  doubleClick() {
+    if (!this.creatingPolygon) {
+      this.creatingPolygon = !this.creatingPolygon
+      this.showMenu = false;
+    }
+    else if (this.creatingPolygon) {
+      this.finalisePolygon();
+    }
+  }
+
+  rightClick(event: MouseEvent) {
+    event.preventDefault();
+    if (this.creatingPolygon) {
+      this.cancelPoint(event);
+    }
+    else {
+      this.showMenu = false;
+    }
+  }
+
+  createPoint() {
+    this.polygonNodes.push(
+      { x: this.mouseposition.x, y: this.mouseposition.y },
+    )
+    this.updatePolygon(this.mouseposition.x, this.mouseposition.y)
   }
 
   followMovement(event: MouseEvent) {
@@ -74,70 +107,64 @@ export class NgxPolymarkerComponent {
   }
 
   finalisePolygon() {
-    if (!this.creatingPolygon) {
-      this.creatingPolygon = !this.creatingPolygon;
+    let allPoints = this.tempPoints.split(' ').filter(point => point !== '')
+    allPoints.pop();
+    allPoints.pop();
+    this.polygonNodes.pop()
+    this.tempPoints = allPoints.join(' ') + ' ';
+
+    const polygonPoints: Node[] = allPoints.map(point => {
+      const [xStr, yStr] = point.split(',');
+      const x = parseFloat(xStr);
+      const y = parseFloat(yStr);
+      return { x, y };
+    })
+
+    const tempPoint: Node = {
+      x: 1,
+      y: 2
     }
-    else if (this.creatingPolygon) {
-      let allPoints = this.tempPoints.split(' ').filter(point => point !== '')
-      allPoints.pop();
-      allPoints.pop();
-      this.polygonNodes.pop()
-      this.tempPoints = allPoints.join(' ') + ' ';
-
-      const polygonPoints: Node[] = allPoints.map(point => {
-        const [xStr, yStr] = point.split(',');
-        const x = parseFloat(xStr);
-        const y = parseFloat(yStr);
-        return { x, y };
-      })
-
-      const tempPoint: Node = {
-        x: 1,
-        y: 2
-      }
-      const pointstoadd: Node[] = [];
-      pointstoadd.push(tempPoint)
-      const vertices = this.getVertices(this.tempPoints);
-      const newPolygon: Polygon = {
-        id: this.polygons.length + 1,
-        nodes: polygonPoints,
-        name: 'new shape',
-        position: {
-          x: this.getPolygonCenter(vertices).x,
-          y: this.getPolygonCenter(vertices).y,
-          rotation: 190
-        },
-        description: ''
-      }
-
-      this.polygons.push(newPolygon);
-      this.creatingPolygon = false;
-      this.tempPoints = '';
-      this.polygonNodes = [];
-
-      this.tempPointActive = false;
+    const pointstoadd: Node[] = [];
+    pointstoadd.push(tempPoint)
+    const vertices = this.getVertices(this.tempPoints);
+    const newPolygon: Polygon = {
+      id: this.polygonsIMP?.length ? + 1 : 1,
+      nodes: polygonPoints,
+      name: 'new shape',
+      position: {
+        x: this.getPolygonCenter(vertices).x,
+        y: this.getPolygonCenter(vertices).y,
+        rotation: 190
+      },
+      description: 'Voer hier een description in'
     }
+
+    this.configService.createPolygon(newPolygon);
+    console.log(this.polygonsIMP)
+    //this.polygons.push(newPolygon);
+    this.creatingPolygon = false;
+    this.tempPoints = '';
+    this.polygonNodes = [];
+
+    this.tempPointActive = false;
   }
 
   cancelPoint(event: MouseEvent) {
-    event.preventDefault();
-    if (this.creatingPolygon) {
-      let allPoints = this.tempPoints.split(' ');
-      allPoints.pop()
-      allPoints.pop()
-      this.polygonNodes.pop()
+    let allPoints = this.tempPoints.split(' ');
+    allPoints.pop()
+    allPoints.pop()
+    this.polygonNodes.pop()
 
-      allPoints = allPoints.filter((point) => point !== '')
+    allPoints = allPoints.filter((point) => point !== '')
 
-      this.tempPoints = allPoints.join(' ') + ' ';
+    this.tempPoints = allPoints.join(' ') + ' ';
 
-      if (allPoints.length < 1) {
-        this.creatingPolygon = false;
-        this.tempPointActive = false;
-        this.tempPoints = '';
-      }
-      this.followMovement(event)
+    if (allPoints.length < 1) {
+      this.creatingPolygon = false;
+      this.tempPointActive = false;
+      this.tempPoints = '';
     }
+    this.followMovement(event)
   }
 
   updateArea() {
@@ -182,63 +209,66 @@ export class NgxPolymarkerComponent {
 
     this.cursorHoverPosition = 1;
     this.circleRadius = 2;
-    for (const polygon of this.polygons) {
-      const vertices = this.getVertices(this.getNodeString(polygon.nodes));
+    if (this.polygonsIMP) {
+      for (const polygon of this.polygonsIMP) {
+        const vertices = this.getVertices(this.getNodeString(polygon.nodes));
 
-      for (let i = 0; i < vertices.length - 1; i++) {
-        const p1 = vertices[i];
-        const p2 = vertices[i + 1];
+        for (let i = 0; i < vertices.length - 1; i++) {
+          const p1 = vertices[i];
+          const p2 = vertices[i + 1];
 
-        // Calculate the direction vector of the line segment
-        const dx = p2.x - p1.x;
-        const dy = p2.y - p1.y;
+          // Calculate the direction vector of the line segment
+          const dx = p2.x - p1.x;
+          const dy = p2.y - p1.y;
 
-        // Calculate the vector from p1 to the cursor
-        const cx = x - p1.x;
-        const cy = y - p1.y;
+          // Calculate the vector from p1 to the cursor
+          const cx = x - p1.x;
+          const cy = y - p1.y;
 
-        // Calculate the dot product of the two vectors
-        const dotProduct = (cx * dx + cy * dy) / (dx * dx + dy * dy);
+          // Calculate the dot product of the two vectors
+          const dotProduct = (cx * dx + cy * dy) / (dx * dx + dy * dy);
 
-        // Check if the point is on the line segment
-        if (dotProduct >= 0 && dotProduct <= 1) {
-          // Calculate the coordinates of the point on the line
-          const onLineX = p1.x + dotProduct * dx;
-          const onLineY = p1.y + dotProduct * dy;
+          // Check if the point is on the line segment
+          if (dotProduct >= 0 && dotProduct <= 1) {
+            // Calculate the coordinates of the point on the line
+            const onLineX = p1.x + dotProduct * dx;
+            const onLineY = p1.y + dotProduct * dy;
 
-          // Calculate the distance from the cursor to the point on the line
-          const dist = this.distance(x, y, onLineX, onLineY);
+            // Calculate the distance from the cursor to the point on the line
+            const dist = this.distance(x, y, onLineX, onLineY);
 
+            // If the distance is within the snap threshold and smaller than the minimum distance,
+            // update the snap coordinates to the nearest point on the line segment
+            if (dist <= this.snappingDistance && dist < minDistance) {
+              minDistance = dist;
+              snapX = onLineX;
+              snapY = onLineY;
+              this.cursorHoverPosition = 2;
+              this.circleRadius = 3;
+            }
+          }
+        }
+
+        const currentMinDistance = this.snappingDistance;
+        minDistance = 30;
+        for (const corner of vertices) {
+          // Calculate the distance from the cursor to the corner
+          const dist = Math.sqrt((corner.x - x) ** 2 + (corner.y - y) ** 2)
           // If the distance is within the snap threshold and smaller than the minimum distance,
-          // update the snap coordinates to the nearest point on the line segment
+          // update the snap coordinates to the nearest corner
           if (dist <= this.snappingDistance && dist < minDistance) {
             minDistance = dist;
-            snapX = onLineX;
-            snapY = onLineY;
-            this.cursorHoverPosition = 2;
+            snapX = corner.x;
+            snapY = corner.y;
+            this.cursorHoverPosition = 3;
             this.circleRadius = 3;
           }
         }
-      }
 
-      const currentMinDistance = this.snappingDistance;
-      minDistance = 30;
-      for (const corner of vertices) {
-        // Calculate the distance from the cursor to the corner
-        const dist = Math.sqrt((corner.x - x) ** 2 + (corner.y - y) ** 2)
-        // If the distance is within the snap threshold and smaller than the minimum distance,
-        // update the snap coordinates to the nearest corner
-        if (dist <= this.snappingDistance && dist < minDistance) {
-          minDistance = dist;
-          snapX = corner.x;
-          snapY = corner.y;
-          this.cursorHoverPosition = 3;
-          this.circleRadius = 3;
-        }
+        minDistance = currentMinDistance;
       }
-
-      minDistance = currentMinDistance;
     }
+
     return { x: snapX, y: snapY };
   }
 
@@ -300,22 +330,21 @@ export class NgxPolymarkerComponent {
   }
 
   selectPolygon(polygon: Polygon) {
-    console.log(polygon)
-    this.setShowMenu();
-  }
+    if (!this.creatingPolygon) {
+      this.activePolygon = polygon;
+      this.showMenu = true;
+    }
 
-  setShowMenu() {
-    this.showMenu = !this.showMenu
   }
 
   getNodeString(nodes: Node[]): string {
     if (nodes.length > 1) {
-      let nodeString: string = ''; 
+      let nodeString: string = '';
       nodes.forEach(splitNode => {
-        const node: string = splitNode.x.toString() + ',' + splitNode.y.toString() + ' '; 
+        const node: string = splitNode.x.toString() + ',' + splitNode.y.toString() + ' ';
         nodeString = nodeString + node
       });
-      return nodeString; 
+      return nodeString;
     }
     else {
       return ''

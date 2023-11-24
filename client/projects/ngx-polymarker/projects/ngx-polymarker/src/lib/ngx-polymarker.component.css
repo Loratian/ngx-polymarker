@@ -1,3 +1,27 @@
+/* || Variables */
+:root {
+    --selected-FontFamily: 'Arial', sans-serif; 
+}
+
+/* || Generic */
+.polymarker {
+    font-family: var(--selected-FontFamily);
+}
+
+h1 {
+    padding: 0px;
+    margin: 0px;
+    font-size: 30px;
+}
+
+p {
+    padding: 0px;
+    margin: 0px;
+    font-size: 18px;
+}
+
+/* || Elements */
+
 .header {
     display: flex;
     flex-direction: row;
@@ -17,6 +41,8 @@
     margin: 20px;
     border: black 1px solid;
 }
+
+/* || Polygon */
 
 .temp-polygon {
     fill: rgba(66, 255, 230, .02);
@@ -53,15 +79,22 @@
     transform: rotate(360);
 }
 
+/* || CONTEXT MENU */
+
 .contextMenu {
-    width: 100px;
-    height: 300px;
-    background-color: green;
-    border-radius: 8%;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+
     position: absolute;
+    width: 350px;
     top: 50px;
-    left: 50px;
+    left: 50px; 
     z-index: 1;
+    padding: 15px;
+
+    background-color: rgba(255, 255, 235, .9);
+    border-radius: 8%;
 }
 
 
