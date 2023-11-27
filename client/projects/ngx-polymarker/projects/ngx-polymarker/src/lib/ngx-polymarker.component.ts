@@ -3,6 +3,8 @@ import { Node } from './Interfaces/node.interface';
 import { Polygon } from './Interfaces/polygon.interface';
 import { NgClass, NgFor, NgIf, CommonModule, NgForOf } from '@angular/common';
 import { NgxPolymarkerService } from './ngx-polymarker.service';
+import { NgModel, FormsModule, ReactiveFormsModule, FormBuilder } from '@angular/forms';
+import { NgControl } from '@angular/forms';
 
 @Component({
   selector: 'ngx-polymarker',
@@ -12,15 +14,19 @@ import { NgxPolymarkerService } from './ngx-polymarker.service';
   imports: [
     NgClass,
     NgFor,
-    NgIf
+    NgIf,
+    FormsModule,
+    ReactiveFormsModule
   ],
 })
 
 export class NgxPolymarkerComponent {
   @Input() polygonsIMP?: any[];
+  @Input() imagePath?: string; 
 
   activePolygon?: Polygon;
-  activeImputField?: Element;
+  editingPolygon: boolean = false;
+  editedValue: string = '';
   fontFamily: string = '';
 
   polygonNodes: Node[] = [];
@@ -36,7 +42,7 @@ export class NgxPolymarkerComponent {
 
   showMenu: boolean = false
 
-  constructor(private configService: NgxPolymarkerService) {
+  constructor(private configService: NgxPolymarkerService, private fb: FormBuilder) {
     this.fontFamily = this.configService.getFontFamily();
     document.documentElement.style.setProperty('--selected-FontFamily', `'${this.fontFamily}', sans-serif`)
   }
@@ -127,25 +133,31 @@ export class NgxPolymarkerComponent {
     const pointstoadd: Node[] = [];
     pointstoadd.push(tempPoint)
     const vertices = this.getVertices(this.tempPoints);
-    const newPolygon: Polygon = {
-      id: this.polygonsIMP?.length ? + 1 : 1,
-      nodes: polygonPoints,
-      name: 'new shape',
-      position: {
-        x: this.getPolygonCenter(vertices).x,
-        y: this.getPolygonCenter(vertices).y,
-        rotation: 190
-      },
-      description: 'Voer hier een description in',
-      customFields: []
+    if (this.polygonsIMP) {
+      const newPolygon: Polygon = {
+        id: this.polygonsIMP.length + 1,
+        nodes: polygonPoints,
+        name: 'new shape',
+        position: {
+          x: this.getPolygonCenter(vertices).x,
+          y: this.getPolygonCenter(vertices).y,
+          rotation: 190
+        },
+        description: 'Voer hier een description in',
+        customFields: []
+      }
+  
+      console.log(newPolygon)
+  
+      this.configService.createPolygon(newPolygon);
+      this.creatingPolygon = false;
+      this.tempPoints = '';
+      this.polygonNodes = [];
+  
+      this.tempPointActive = false;
     }
-
-    this.configService.createPolygon(newPolygon);
-    this.creatingPolygon = false;
-    this.tempPoints = '';
-    this.polygonNodes = [];
-
-    this.tempPointActive = false;
+    
+    
   }
 
   cancelPoint(event: MouseEvent) {
@@ -332,8 +344,9 @@ export class NgxPolymarkerComponent {
     if (!this.creatingPolygon) {
       this.activePolygon = polygon;
       this.showMenu = true;
-    }
+    } 
 
+    console.log(this.polygonsIMP);
   }
 
   getNodeString(nodes: Node[]): string {

@@ -1,6 +1,7 @@
 <div class="polymarker">
-    <svg class="svg" (click)="click();" (mousemove)="followMovement($event)" (dblclick)="doubleClick()"
+    <svg style="background-image: url({{imagePath}});" class="svg" (click)="click();" (mousemove)="followMovement($event)" (dblclick)="doubleClick()"
         (contextmenu)="rightClick($event)">
+        <image class="img" [attr.href]="imagePath"></image>
 
         <polygon class="temp-polygon" [attr.points]="tempPoints" />
 
@@ -13,23 +14,25 @@
             <g *ngIf="creatingPolygon">
                 <circle *ngFor="let node of polygon.nodes" [attr.cx]="node.x" [attr.cy]="node.y" r="2" class="circle" />
             </g>
-
-
         </g>
 
         <circle class="circle" *ngFor="let point of polygonNodes" [attr.cx]="point.x" [attr.cy]="point.y" r="2" />
         <circle *ngIf="creatingPolygon"
             [ngClass]="{'circle': cursorHoverPosition == 1, 'circleLine': cursorHoverPosition == 2, 'circleCorner': cursorHoverPosition == 3}"
             [attr.cx]="mouseposition.x" [attr.cy]="mouseposition.y" [attr.r]="circleRadius" />
+            
     </svg>
-    <div class="contextMenu" *ngIf="showMenu">
-        <span>
-            <H1>{{activePolygon?.name}}</H1>
-            <p>{{activePolygon?.description}}</p>
+    <div class="contextMenu" *ngIf="showMenu && activePolygon">
+        <span class="label">
+            <H1 *ngIf="!editingPolygon">{{activePolygon.name}} {{activePolygon.id}}</H1>
+            <input class="contextMenuName input" placeholder="{{activePolygon.name}}" *ngIf="editingPolygon" > 
+            <p *ngIf="!editingPolygon">{{activePolygon.description}}</p>
+            <textarea class="contextMenuDescription input" placeholder="{{activePolygon.description}}" *ngIf="editingPolygon" ></textarea>
         </span> 
-        <div *ngFor="let customfield of activePolygon?.customFields" class="customLabel">
+        <div *ngFor="let customfield of activePolygon?.customFields; let i = index" class="customLabel">
             <label class="label">{{customfield.label}}</label>
-            <p>{{customfield.value}}</p>
+            <p *ngIf="!editingPolygon">{{customfield.value}}</p> 
+            <input class="input" placeholder="{{customfield.value}}" *ngIf="editingPolygon" [(ngModel)]="customfield.value"> 
         </div>
     </div>
 </div>

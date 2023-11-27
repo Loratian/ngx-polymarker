@@ -1,6 +1,7 @@
 /* || Variables */
 :root {
     --selected-FontFamily: 'Arial', sans-serif; 
+    --polygon-color: rgba(255, 105, 180, .9); 
 }
 
 /* || Generic */
@@ -29,6 +30,10 @@ p {
     flex-direction: row;
 }
 
+.img {
+    z-index: 1;
+}
+
 .svg-container {
     display: flex;
     flex-direction: column;
@@ -48,27 +53,29 @@ p {
 
 .temp-polygon {
     fill: rgba(66, 255, 230, .02);
-    stroke: rgba(66, 255, 230, .9);
+    stroke: rgba(255, 105, 180, .9);
+    z-index: 10;
 }
 
 .polygon {
     stroke: rgba(66, 255, 230, .05);
     fill: rgba(66, 255, 230, .00);
     transition: .2s ease;
+    z-index: 10;
 }
 
 .polygon:hover {
-    stroke: rgba(66, 255, 230, .9);
+    stroke: rgba(255, 105, 180, .9);
     fill: rgba(66, 255, 230, .01);
-
+    z-index: 10;
 }
 
 .polygonCreate {
     fill: rgba(66, 255, 230, .05);
-    stroke: rgba(66, 255, 230, .9);
+    stroke: rgba(255, 105, 180, .9);
 }
 .circle {
-    fill: rgba(66, 255, 230, 1);
+    fill: rgba(255, 105, 180, 1);
 }
 .circleLine {
     fill: red;
@@ -95,8 +102,9 @@ p {
     z-index: 1;
     padding: 15px;
 
-    background-color: rgba(255, 255, 235, .9);
-    border-radius: 8%;
+    background-color: rgba(255, 255, 255, .9);
+    border-radius: 8px;
+    box-shadow: 4px 4px 6px rgb(0, 0, 0, .25);
 }
 
 .customLabel {
@@ -109,3 +117,18 @@ p {
     font-weight: bold;
 }
 
+.input {
+    height: 30px;
+    font-size: 18px;
+    font-family: var(--selected-FontFamily);
+    width: fill;
+}
+
+.contextMenuName {
+    height: 40px;
+    font-size: 30px;
+}
+
+.contextMenuDescription {
+    height: 100px;
+}
