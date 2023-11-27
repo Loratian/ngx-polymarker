@@ -27,8 +27,9 @@
             <H1>{{activePolygon?.name}}</H1>
             <p>{{activePolygon?.description}}</p>
         </span> 
-        <span *NgFor="let fields in activePolygon.customFields"> 
-            <
-        </span>
+        <div *ngFor="let customfield of activePolygon?.customFields" class="customLabel">
+            <label class="label">{{customfield.label}}</label>
+            <p>{{customfield.value}}</p>
+        </div>
     </div>
 </div>

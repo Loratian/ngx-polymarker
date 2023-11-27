@@ -22,7 +22,6 @@ export class NgxPolymarkerService {
 
   createPolygon(polygon: Polygon): void {
     this.newPolygonSubject.next(polygon); // Emit the newly created polygon
-    console.log(polygon)
   }
 
   // Polygons

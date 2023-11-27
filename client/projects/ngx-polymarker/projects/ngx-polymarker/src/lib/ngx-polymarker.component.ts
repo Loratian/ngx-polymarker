@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Node } from './Interfaces/node.interface';
 import { Polygon } from './Interfaces/polygon.interface';
-import { NgClass, NgFor, NgIf } from '@angular/common';
+import { NgClass, NgFor, NgIf, CommonModule, NgForOf } from '@angular/common';
 import { NgxPolymarkerService } from './ngx-polymarker.service';
 
 @Component({
@@ -136,12 +136,11 @@ export class NgxPolymarkerComponent {
         y: this.getPolygonCenter(vertices).y,
         rotation: 190
       },
-      description: 'Voer hier een description in'
+      description: 'Voer hier een description in',
+      customFields: []
     }
 
     this.configService.createPolygon(newPolygon);
-    console.log(this.polygonsIMP)
-    //this.polygons.push(newPolygon);
     this.creatingPolygon = false;
     this.tempPoints = '';
     this.polygonNodes = [];

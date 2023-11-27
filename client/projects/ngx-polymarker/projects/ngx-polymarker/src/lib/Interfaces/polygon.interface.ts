@@ -6,6 +6,7 @@ export interface Polygon {
     name: string; 
     position: NamePosition;
     description: string; 
+    customFields: CustomField [];
 }
 
 export interface NamePosition {
@@ -13,3 +14,9 @@ export interface NamePosition {
     y: number; 
     rotation: number; 
 }
+
+export interface CustomField {
+    label: string; 
+    value: string; 
+}
+
