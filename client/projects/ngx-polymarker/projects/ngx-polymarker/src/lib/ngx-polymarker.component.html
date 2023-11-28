@@ -34,5 +34,6 @@
             <p *ngIf="!editingPolygon">{{customfield.value}}</p> 
             <input class="input" placeholder="{{customfield.value}}" *ngIf="editingPolygon" [(ngModel)]="customfield.value"> 
         </div>
+        <button (click)="editingPolygon = !editingPolygon">Edit</button>
     </div>
 </div>

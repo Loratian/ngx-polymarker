@@ -137,7 +137,7 @@ export class NgxPolymarkerComponent {
       const newPolygon: Polygon = {
         id: this.polygonsIMP.length + 1,
         nodes: polygonPoints,
-        name: 'new shape',
+        name: 'New Shape',
         position: {
           x: this.getPolygonCenter(vertices).x,
           y: this.getPolygonCenter(vertices).y,
