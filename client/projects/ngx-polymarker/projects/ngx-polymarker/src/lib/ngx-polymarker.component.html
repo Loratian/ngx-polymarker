@@ -24,16 +24,17 @@
     </svg>
     <div class="contextMenu" *ngIf="showMenu && activePolygon">
         <span class="label">
-            <H1 *ngIf="!editingPolygon">{{activePolygon.name}} {{activePolygon.id}}</H1>
-            <input class="contextMenuName input" placeholder="{{activePolygon.name}}" *ngIf="editingPolygon" > 
+            <H1 *ngIf="!editingPolygon" >{{activePolygon.name}} {{activePolygon.id}}</H1>
+            <input class="contextMenuName input" *ngIf="editingPolygon" [(ngModel)]="activePolygon.name"> 
             <p *ngIf="!editingPolygon">{{activePolygon.description}}</p>
-            <textarea class="contextMenuDescription input" placeholder="{{activePolygon.description}}" *ngIf="editingPolygon" ></textarea>
+            <textarea class="contextMenuDescription input" *ngIf="editingPolygon" [(ngModel)]="activePolygon.description" ></textarea>
         </span> 
         <div *ngFor="let customfield of activePolygon?.customFields; let i = index" class="customLabel">
             <label class="label">{{customfield.label}}</label>
             <p *ngIf="!editingPolygon">{{customfield.value}}</p> 
             <input class="input" placeholder="{{customfield.value}}" *ngIf="editingPolygon" [(ngModel)]="customfield.value"> 
         </div>
-        <button (click)="editingPolygon = !editingPolygon">Edit</button>
+        <button *ngIf="!editingPolygon" (click)="toggleEditingPolygon()">Edit</button>
+        <button *ngIf="editingPolygon" (click)="toggleEditingPolygon()">Save</button>
     </div>
 </div>

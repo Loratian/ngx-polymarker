@@ -26,7 +26,6 @@ export class NgxPolymarkerComponent {
 
   activePolygon?: Polygon;
   editingPolygon: boolean = false;
-  editedValue: string = '';
   fontFamily: string = '';
 
   polygonNodes: Node[] = [];
@@ -347,6 +346,27 @@ export class NgxPolymarkerComponent {
     } 
 
     console.log(this.polygonsIMP);
+  }
+
+  toggleEditingPolygon() {
+    if (this.editingPolygon) {
+      this.editingPolygon = !this.editingPolygon;
+      this.saveChanges()
+    }
+    else {
+      this.editingPolygon = !this.editingPolygon;
+    }
+  }
+
+  saveChanges() {
+    if (this.activePolygon && this.polygonsIMP) {
+
+
+      const index = this.polygonsIMP?.findIndex(polygon => polygon.id == this.activePolygon?.id); 
+      this.polygonsIMP.splice(index, 1);
+      this.configService.createPolygon(this.activePolygon);
+      this.activePolygon = undefined;
+    }
   }
 
   getNodeString(nodes: Node[]): string {
