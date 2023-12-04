@@ -1,10 +1,12 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { Node } from './Interfaces/node.interface';
 import { Polygon } from './Interfaces/polygon.interface';
-import { NgClass, NgFor, NgIf, CommonModule, NgForOf } from '@angular/common';
+import { NgClass, NgFor, NgIf } from '@angular/common';
 import { NgxPolymarkerService } from './ngx-polymarker.service';
-import { NgModel, FormsModule, ReactiveFormsModule, FormBuilder } from '@angular/forms';
-import { NgControl } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, FormBuilder } from '@angular/forms';
+import polylabel from 'polylabel';
+
+
 
 @Component({
   selector: 'ngx-polymarker',
@@ -22,10 +24,11 @@ import { NgControl } from '@angular/forms';
 
 export class NgxPolymarkerComponent {
   @Input() polygonsIMP?: any[];
-  @Input() imagePath?: string; 
+  @Input() imagePath?: string;
 
   activePolygon?: Polygon;
   editingPolygon: boolean = false;
+  editedValue: string = '';
   fontFamily: string = '';
 
   polygonNodes: Node[] = [];
@@ -132,31 +135,29 @@ export class NgxPolymarkerComponent {
     const pointstoadd: Node[] = [];
     pointstoadd.push(tempPoint)
     const vertices = this.getVertices(this.tempPoints);
+    const middlePoint = this.getPolygonCenter(vertices)
     if (this.polygonsIMP) {
       const newPolygon: Polygon = {
         id: this.polygonsIMP.length + 1,
         nodes: polygonPoints,
         name: 'New Shape',
         position: {
-          x: this.getPolygonCenter(vertices).x,
-          y: this.getPolygonCenter(vertices).y,
+          x: middlePoint.x,
+          y: middlePoint.y,
           rotation: 190
         },
         description: 'Voer hier een description in',
         customFields: []
       }
-  
-      console.log(newPolygon)
-  
       this.configService.createPolygon(newPolygon);
       this.creatingPolygon = false;
       this.tempPoints = '';
       this.polygonNodes = [];
-  
+
       this.tempPointActive = false;
     }
-    
-    
+
+
   }
 
   cancelPoint(event: MouseEvent) {
@@ -336,16 +337,47 @@ export class NgxPolymarkerComponent {
     const centerX = sumX / vertices.length;
     const centerY = sumY / vertices.length;
 
-    return { x: centerX, y: centerY };
+    const middlePoint = { x: centerX, y: centerY }
+
+    const isInside = this.checkIfInPolygon(middlePoint, vertices);
+
+    if (!isInside) {
+      this.repositionTextInPolygon(middlePoint, vertices)
+    }
+
+    return middlePoint;
+  }
+
+  checkIfInPolygon(point: { x: number; y: number }, vertices: { x: number; y: number }[]): boolean {
+    let isInside = false;
+
+    for (let i = 0, j = vertices.length - 1; i < vertices.length; j = i++) {
+      const xi = vertices[i].x;
+      const yi = vertices[i].y;
+      const xj = vertices[j].x;
+      const yj = vertices[j].y;
+
+      const intersect = ((yi > point.y) !== (yj > point.y)) &&
+        (point.x < (xj - xi) * (point.y - yi) / (yj - yi) + xi);
+
+      if (intersect) {
+        isInside = !isInside;
+      }
+    }
+
+    return isInside;
+  }
+
+  repositionTextInPolygon(point: { x: number; y: number }, vertices: { x: number; y: number }[]): { x: number, y: number } {
+    console.log(point)
+    return { x: 2, y: 2 }
   }
 
   selectPolygon(polygon: Polygon) {
     if (!this.creatingPolygon) {
       this.activePolygon = polygon;
       this.showMenu = true;
-    } 
-
-    console.log(this.polygonsIMP);
+    }
   }
 
   toggleEditingPolygon() {
@@ -360,9 +392,7 @@ export class NgxPolymarkerComponent {
 
   saveChanges() {
     if (this.activePolygon && this.polygonsIMP) {
-
-
-      const index = this.polygonsIMP?.findIndex(polygon => polygon.id == this.activePolygon?.id); 
+      const index = this.polygonsIMP?.findIndex(polygon => polygon.id == this.activePolygon?.id);
       this.polygonsIMP.splice(index, 1);
       this.configService.createPolygon(this.activePolygon);
       this.activePolygon = undefined;

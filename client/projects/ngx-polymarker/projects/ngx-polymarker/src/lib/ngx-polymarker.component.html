@@ -10,7 +10,7 @@
                 [attr.points]="getNodeString(polygon.nodes)" (mouseenter)="polygonHovered(polygon.id)"
                 (mouseout)="polygonLeft(polygon.id)" (click)="selectPolygon(polygon)">
             </polygon>
-            <text [attr.x]="polygon.position.x" [attr.y]="polygon.position.y" class="mapText">{{polygon.name}}</text>
+                <text [attr.x]="polygon.position.x" [attr.y]="polygon.position.y" class="mapText">{{polygon.name}}</text>
             <g *ngIf="creatingPolygon">
                 <circle *ngFor="let node of polygon.nodes" [attr.cx]="node.x" [attr.cy]="node.y" r="2" class="circle" />
             </g>
@@ -24,15 +24,15 @@
     </svg>
     <div class="contextMenu" *ngIf="showMenu && activePolygon">
         <span class="label">
-            <H1 *ngIf="!editingPolygon" >{{activePolygon.name}} {{activePolygon.id}}</H1>
+            <H1 *ngIf="!editingPolygon" >{{activePolygon.name}}</H1>
             <input class="contextMenuName input" *ngIf="editingPolygon" [(ngModel)]="activePolygon.name"> 
             <p *ngIf="!editingPolygon">{{activePolygon.description}}</p>
             <textarea class="contextMenuDescription input" *ngIf="editingPolygon" [(ngModel)]="activePolygon.description" ></textarea>
         </span> 
         <div *ngFor="let customfield of activePolygon?.customFields; let i = index" class="customLabel">
             <label class="label">{{customfield.label}}</label>
-            <p *ngIf="!editingPolygon">{{customfield.value}}</p> 
-            <input class="input" placeholder="{{customfield.value}}" *ngIf="editingPolygon" [(ngModel)]="customfield.value"> 
+            <p *ngIf="!editingPolygon"> {{customfield.value}}</p> 
+            <input class="input" *ngIf="editingPolygon" [(ngModel)]="activePolygon.customFields[i].value"> 
         </div>
         <button *ngIf="!editingPolygon" (click)="toggleEditingPolygon()">Edit</button>
         <button *ngIf="editingPolygon" (click)="toggleEditingPolygon()">Save</button>

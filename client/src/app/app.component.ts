@@ -10,20 +10,23 @@ import { Node } from 'projects/ngx-polymarker/dist/ngx-polymarker/lib/Interfaces
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnDestroy {
-  private newPolygonSubscription: Subscription; 
+  private newPolygonSubscription: Subscription;
   latestPolygon: Polygon | undefined;
-  polygons: Polygon[] = []; 
+  polygons: Polygon[] = [];
   title = 'client';
 
-  constructor (private polymarkerService: NgxPolymarkerService) {
+  constructor(private polymarkerService: NgxPolymarkerService) {
     this.polymarkerService.setFontFamily('Montserrat')
     this.newPolygonSubscription = this.polymarkerService.getNewPolygonObservable().subscribe(polygon => {
-      const customFields: CustomField[] = [
-        {label: "Kingdom Name", value: "Navaron"},
-        {label: "Ruling House", value: "House of Navar"}
-      ]
-
-      polygon.customFields = customFields;
+      if (polygon.customFields.length <= 1) {
+        const customFields: CustomField[] = [
+          { label: "Kingdom Name", value: "Navaron" },
+          { label: "Ruling House", value: "House of Navar" },
+          { label: "blablabla", value: "blablabla" }
+        ]
+        
+        polygon.customFields = customFields;
+      }
 
       this.polygons.push(polygon);
     })

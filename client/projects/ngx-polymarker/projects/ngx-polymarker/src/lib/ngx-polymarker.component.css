@@ -88,6 +88,11 @@ p {
     transform: rotate(360);
 }
 
+.mapText {
+    fill: wheat;
+    font-size: 24px;
+}
+
 /* || CONTEXT MENU */
 
 .contextMenu {
@@ -102,7 +107,7 @@ p {
     z-index: 1;
     padding: 15px;
 
-    background-color: rgba(255, 255, 255, .9);
+    background-color: rgba(255, 255, 255, .95);
     border-radius: 8px;
     box-shadow: 4px 4px 6px rgb(0, 0, 0, .25);
 }
